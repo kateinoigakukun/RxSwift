@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.1
 
 import PackageDescription
 
@@ -16,14 +16,19 @@ extension Product {
 
 extension Target {
   static func rxCocoa() -> [Target] {
-    return [.target(name: "RxCocoa", dependencies: [
-      "RxSwift", "RxRelay",
-      .target(name: "RxCocoaRuntime", condition: .when(platforms: [.macOS, .iOS, .tvOS, .watchOS])),
-    ])]
+    #if os(Linux)
+      return [.target(name: "RxCocoa", dependencies: ["RxSwift", "RxRelay"])]
+    #else
+      return [.target(name: "RxCocoa", dependencies: ["RxSwift", "RxRelay", "RxCocoaRuntime"])]
+    #endif
   }
 
   static func rxCocoaRuntime() -> [Target] {
-    return [.target(name: "RxCocoaRuntime", dependencies: ["RxSwift"])]
+    #if os(Linux)
+      return []
+    #else
+      return [.target(name: "RxCocoaRuntime", dependencies: ["RxSwift"])]
+    #endif
   }
 
   static func allTests() -> [Target] {
